@@ -26,9 +26,9 @@ public class Resume {
         }
         
         public interface OptionalSteps {
-            OptionalSteps setEducation(String education);
-            OptionalSteps setExperience(String experience);
-            OptionalSteps setSkills(String skills);
+            OptionalSteps addEducation(String education);
+            OptionalSteps addExperience(String experience);
+            OptionalSteps addSkill(String skills);
             BuildStep noMoreOptionalElements();
         }
 
@@ -71,19 +71,19 @@ public class Resume {
             }
 
             @Override
-            public Resume.ResumeBuilder.OptionalSteps setEducation(String education) {
+            public Resume.ResumeBuilder.OptionalSteps addEducation(String education) {
                 this.education.add(education);
                 return this;
             }
 
             @Override
-            public Resume.ResumeBuilder.OptionalSteps setExperience(String experience) {
+            public Resume.ResumeBuilder.OptionalSteps addExperience(String experience) {
                 this.experience.add(experience);
                 return this;
             }
 
             @Override
-            public Resume.ResumeBuilder.OptionalSteps setSkills(String skills) {
+            public Resume.ResumeBuilder.OptionalSteps addSkill(String skills) {
                 this.skills.add(skills);
                 return this;
             }     
