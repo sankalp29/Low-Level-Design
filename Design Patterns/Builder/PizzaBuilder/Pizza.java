@@ -46,20 +46,10 @@ public class Pizza {
             return this;
         }
 
-        public Crust getCrust() {
-            return crust;
-        }
-
-        public Set<Topping> getToppings() {
-            return toppings;
-        }
-
-        public Size getSize() {
-            return size;
-        }
-
         public Pizza build() {
-            Pizza pizza = new Pizza(crust, toppings, size);
+            if (crust == null) throw new IllegalArgumentException("Crust cannot be empty");
+            if (size == null) throw new IllegalArgumentException("Size cannot be empty");
+            Pizza pizza = new Pizza(crust, Set.copyOf(toppings), size);
             return pizza;
         }
     }
