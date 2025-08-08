@@ -32,8 +32,15 @@ public class Home {
         }
 
         public interface GarageStep {
-            BuildStep addGarage();
-            BuildStep removeGarage();
+            FeatureStep addGarage();
+            FeatureStep removeGarage();
+        }
+
+        public interface FeatureStep {
+            FeatureStep addSwimmingPool();
+            FeatureStep addTerrace();
+            FeatureStep addTennisCourt();
+            BuildStep noMoreFeatures();
         }
 
         public interface BuildStep {
@@ -44,7 +51,7 @@ public class Home {
             return new Steps();
         }
 
-        private static class Steps implements RoomStep, GardenStep, GarageStep, BuildStep {
+        private static class Steps implements RoomStep, GardenStep, GarageStep, FeatureStep, BuildStep {
             
             private final List<Room> rooms;
             private Garage garage;
@@ -96,14 +103,37 @@ public class Home {
             }
 
             @Override
-            public Home.HomeBuilder.BuildStep addGarage() {
+            public Home.HomeBuilder.FeatureStep addGarage() {
                 this.garage = new Garage();
                 return this;
             }
 
             @Override
-            public Home.HomeBuilder.BuildStep removeGarage() {
+            public Home.HomeBuilder.FeatureStep removeGarage() {
                 this.garage = null;
+                return this;
+            }
+
+            @Override
+            public Home.HomeBuilder.FeatureStep addSwimmingPool() {
+                System.out.println("Swimming pool...");
+                return this;
+            }
+
+            @Override
+            public Home.HomeBuilder.FeatureStep addTennisCourt() {
+                System.out.println("Tennis court...");
+                return this;
+            }
+
+            @Override
+            public Home.HomeBuilder.FeatureStep addTerrace() {
+                System.out.println("Terrace...");
+                return this;
+            }
+
+            @Override
+            public Home.HomeBuilder.BuildStep noMoreFeatures() {
                 return this;
             }
 

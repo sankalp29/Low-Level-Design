@@ -7,6 +7,9 @@ public class Main {
                     .noMoreRooms()
                     .addGarden()
                     .addGarage()
+                    .addSwimmingPool()
+                    .addTerrace()
+                    .noMoreFeatures()
                     .build();
 
         System.out.println(home);
