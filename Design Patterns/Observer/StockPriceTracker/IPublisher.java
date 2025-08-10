@@ -16,9 +16,9 @@ public interface IPublisher {
 
     default void publishPriceChange(int newPrice) {
         if (getCurrentPrice() != newPrice) {
+            setPrice(newPrice);
             notifySubscribers(newPrice);
         }
-        setPrice(newPrice);
     }
 
     default void notifySubscribers(int newPrice) {
@@ -26,5 +26,6 @@ public interface IPublisher {
         for (ISubscriber subscriber : getSubscribers()) {
             subscriber.receive(this, newPrice);
         }
+        System.out.println();
     }
 }

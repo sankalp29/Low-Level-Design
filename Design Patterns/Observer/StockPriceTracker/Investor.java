@@ -14,6 +14,6 @@ public class Investor implements ISubscriber {
     }
 
     public void receive(IPublisher publisher, int price) {
-        System.out.println("Received update at " + name + ". Updated price for " + publisher.toString() + " : " + price);
+        System.out.println(name + " -> Price update: " + publisher.toString() + " : " + price);
     }
 }
