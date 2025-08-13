@@ -46,6 +46,13 @@ public class LoggerScheduler {
         }
     }
 
+    public void log(String type, String message) {
+        Logger logger = loggerRegistry.getLogger(type);
+        if (logger == null) throw new IllegalArgumentException("Illegal logger type chosen...");
+        blockingQueue.offer(logger.log(message));
+        startFlushThreadIfNeeded();
+    }
+
     private void startFlushThreadIfNeeded() {
         if (isFlushThreadRunning.compareAndSet(false, true)) {
             // Start the thread to flush the queue to disk
@@ -68,12 +75,5 @@ public class LoggerScheduler {
                 if (!blockingQueue.isEmpty()) startFlushThreadIfNeeded();
             }
         }
-    }
-
-    public void log(String type, String message) {
-        Logger logger = loggerRegistry.getLogger(type);
-        if (logger == null) throw new IllegalArgumentException("Illegal logger type chosen...");
-        blockingQueue.offer(logger.log(message));
-        startFlushThreadIfNeeded();
     }
 }
