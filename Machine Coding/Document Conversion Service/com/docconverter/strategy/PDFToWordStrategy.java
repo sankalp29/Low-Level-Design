@@ -16,22 +16,12 @@ public class PDFToWordStrategy implements ConversionStrategy {
                     "PDF", targetFormat.name(), "null");
         }
         
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
-
         logger.info("Converting document from PDF to Word: " + document.getName());
         
         try {
             Thread.sleep(100); // Simulate processing time
             
-            String convertedContent = simulatePdfToWordConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_word", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_word", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -48,19 +38,9 @@ public class PDFToWordStrategy implements ConversionStrategy {
                     document.getDocumentFormat().name(), targetFormat.name(), document.getName());
         }
     }
-    
-    @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.PDF && to == DocumentFormat.WORD;
-    }
-    
+
     @Override
     public String getConversionDescription() {
         return "Converts PDF documents to Microsoft Word format";
-    }
-    
-    private String simulatePdfToWordConversion(String content) {
-        // Simulate conversion logic
-        return "[WORD_HEADER]" + content.replace("[PDF_HEADER]", "").replace("[PDF_FOOTER]", "") + "[WORD_FOOTER]";
     }
 }

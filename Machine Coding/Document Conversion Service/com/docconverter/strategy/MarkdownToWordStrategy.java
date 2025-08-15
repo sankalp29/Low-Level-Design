@@ -16,22 +16,12 @@ public class MarkdownToWordStrategy implements ConversionStrategy {
                     "MARKDOWN", targetFormat.name(), "null");
         }
         
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
-
         logger.info("Converting document from Markdown to Word: " + document.getName());
         
         try {
             Thread.sleep(100); // Simulate processing time
             
-            String convertedContent = simulateMarkdownToWordConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_word", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_word", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -48,20 +38,9 @@ public class MarkdownToWordStrategy implements ConversionStrategy {
                     document.getDocumentFormat().name(), targetFormat.name(), document.getName());
         }
     }
-    
-    @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.MARKDOWN && to == DocumentFormat.WORD;
-    }
-    
+
     @Override
     public String getConversionDescription() {
         return "Converts Markdown documents to Microsoft Word format";
-    }
-    
-    private String simulateMarkdownToWordConversion(String content) {
-        // Simulate conversion logic - convert markdown syntax to Word
-        String converted = content.replace("# ", "[HEADING1]").replace("## ", "[HEADING2]").replace("**", "[BOLD]");
-        return "[WORD_HEADER]" + converted + "[WORD_FOOTER]";
     }
 }

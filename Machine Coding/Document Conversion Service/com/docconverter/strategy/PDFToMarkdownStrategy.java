@@ -15,23 +15,13 @@ public class PDFToMarkdownStrategy implements ConversionStrategy {
             throw new DocumentConversionException("Cannot convert null document", 
                     "PDF", targetFormat.name(), "null");
         }
-        
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
-
+    
         logger.info("Converting document from PDF to Markdown: " + document.getName());
         
         try {
             Thread.sleep(100); // Simulate processing time
             
-            String convertedContent = simulatePdfToMarkdownConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_markdown", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_markdown", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -48,20 +38,9 @@ public class PDFToMarkdownStrategy implements ConversionStrategy {
                     document.getDocumentFormat().name(), targetFormat.name(), document.getName());
         }
     }
-    
-    @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.PDF && to == DocumentFormat.MARKDOWN;
-    }
-    
+
     @Override
     public String getConversionDescription() {
         return "Converts PDF documents to Markdown format";
-    }
-    
-    private String simulatePdfToMarkdownConversion(String content) {
-        // Simulate conversion logic - extract text from PDF and convert to markdown
-        String extracted = content.replace("[PDF_HEADER]", "").replace("[PDF_FOOTER]", "");
-        return "# Converted from PDF\n\n" + extracted;
     }
 }

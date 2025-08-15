@@ -15,11 +15,6 @@ public class WordToPDFStrategy implements ConversionStrategy {
             throw new DocumentConversionException("Cannot convert null document", 
                     "WORD", targetFormat.name(), "null");
         }
-        
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
 
         logger.info("Converting document from Word to PDF: " + document.getName());
         
@@ -27,12 +22,7 @@ public class WordToPDFStrategy implements ConversionStrategy {
             // Simulate conversion process
             Thread.sleep(100); // Simulate processing time
             
-            String convertedContent = simulateWordToPdfConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_pdf", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_pdf", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -51,17 +41,7 @@ public class WordToPDFStrategy implements ConversionStrategy {
     }
     
     @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.WORD && to == DocumentFormat.PDF;
-    }
-    
-    @Override
     public String getConversionDescription() {
         return "Converts Microsoft Word documents to PDF format";
-    }
-    
-    private String simulateWordToPdfConversion(String content) {
-        // Simulate conversion logic
-        return "[PDF_HEADER]" + content + "[PDF_FOOTER]";
     }
 }

@@ -15,23 +15,13 @@ public class WordToMarkdownStrategy implements ConversionStrategy {
             throw new DocumentConversionException("Cannot convert null document", 
                     "WORD", targetFormat.name(), "null");
         }
-        
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
-
+    
         logger.info("Converting document from Word to Markdown: " + document.getName());
         
         try {
             Thread.sleep(100); // Simulate processing time
             
-            String convertedContent = simulateWordToMarkdownConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_markdown", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_markdown", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -50,20 +40,7 @@ public class WordToMarkdownStrategy implements ConversionStrategy {
     }
     
     @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.WORD && to == DocumentFormat.MARKDOWN;
-    }
-    
-    @Override
     public String getConversionDescription() {
         return "Converts Microsoft Word documents to Markdown format";
-    }
-    
-    private String simulateWordToMarkdownConversion(String content) {
-        // Simulate conversion logic - convert Word formatting to markdown
-        String converted = content.replace("[WORD_HEADER]", "").replace("[WORD_FOOTER]", "")
-                                  .replace("[HEADING1]", "# ").replace("[HEADING2]", "## ")
-                                  .replace("[BOLD]", "**");
-        return converted;
     }
 }

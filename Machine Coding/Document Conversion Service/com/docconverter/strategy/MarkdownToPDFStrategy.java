@@ -16,22 +16,11 @@ public class MarkdownToPDFStrategy implements ConversionStrategy {
                     "MARKDOWN", targetFormat.name(), "null");
         }
         
-        if (!isValidConversion(document.getDocumentFormat(), targetFormat)) {
-            throw new DocumentConversionException("Invalid conversion requested", 
-                    document.getDocumentFormat().name(), targetFormat.name(), document.getName());
-        }
-
         logger.info("Converting document from Markdown to PDF: " + document.getName());
         
         try {
             Thread.sleep(100); // Simulate processing time
-            
-            String convertedContent = simulateMarkdownToPdfConversion(document.getContent());
-            Document convertedDoc = new Document(
-                document.getName() + "_converted_to_pdf", 
-                convertedContent, 
-                targetFormat
-            );
+            Document convertedDoc = new Document(document.getName() + "_converted_to_pdf", document.getContent(), targetFormat);
             
             logger.info("Successfully converted document: " + document.getName());
             return convertedDoc;
@@ -50,18 +39,7 @@ public class MarkdownToPDFStrategy implements ConversionStrategy {
     }
     
     @Override
-    public boolean isValidConversion(DocumentFormat from, DocumentFormat to) {
-        return from == DocumentFormat.MARKDOWN && to == DocumentFormat.PDF;
-    }
-    
-    @Override
     public String getConversionDescription() {
         return "Converts Markdown documents to PDF format";
-    }
-    
-    private String simulateMarkdownToPdfConversion(String content) {
-        // Simulate conversion logic - convert markdown syntax to PDF
-        String converted = content.replace("# ", "[H1]").replace("## ", "[H2]").replace("**", "[BOLD]");
-        return "[PDF_HEADER]" + converted + "[PDF_FOOTER]";
     }
 }
