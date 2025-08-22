@@ -1,5 +1,8 @@
 package com.apiratelimiter;
 
+import com.apiratelimiter.user.User;
+import com.apiratelimiter.user.UserType;
+
 public class RateLimits {
     public static RateLimitInfo getRateLimits(User user) {
         UserType userType = user.getUserType();

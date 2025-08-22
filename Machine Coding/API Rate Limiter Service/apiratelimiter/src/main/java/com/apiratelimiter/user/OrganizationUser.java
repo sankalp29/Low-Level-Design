@@ -1,4 +1,4 @@
-package com.apiratelimiter;
+package com.apiratelimiter.user;
 
 public class OrganizationUser extends User {
     

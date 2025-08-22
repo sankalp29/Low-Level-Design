@@ -53,8 +53,7 @@ public class DocumentConverterClient {
             return document;
         }
         
-        ConversionStrategy strategy = conversionStrategyFactory.getConversionStrategy(
-                document.getDocumentFormat(), targetFormat);
+        ConversionStrategy strategy = conversionStrategyFactory.getConversionStrategy(document.getDocumentFormat(), targetFormat);
 
         Document convertedDocument = strategy.convert(document, targetFormat);
         
@@ -63,10 +62,6 @@ public class DocumentConverterClient {
         logger.info("Converted document stored with ID: " + convertedDocId);
         
         return convertedDocument;
-    }
-    
-    public Optional<Document> getDocument(String documentId) {
-        return documentUploader.getDocument(documentId);
     }
     
     public boolean deleteDocument(String documentId) {

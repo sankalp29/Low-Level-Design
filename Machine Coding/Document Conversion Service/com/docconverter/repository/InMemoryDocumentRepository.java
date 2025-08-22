@@ -22,21 +22,6 @@ public class InMemoryDocumentRepository implements DocumentRepository {
     }
 
     @Override
-    public List<Document> findByFormat(DocumentFormat format) {
-        if (format == null) {
-            return Collections.emptyList();
-        }
-        return documents.values().stream()
-                .filter(doc -> format.equals(doc.getDocumentFormat()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Document> findAll() {
-        return new ArrayList<>(documents.values());
-    }
-
-    @Override
     public boolean delete(String documentId) {
         return documents.remove(documentId) != null;
     }
@@ -44,10 +29,5 @@ public class InMemoryDocumentRepository implements DocumentRepository {
     @Override
     public void clear() {
         documents.clear();
-    }
-
-    @Override
-    public long count() {
-        return documents.size();
     }
 }

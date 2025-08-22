@@ -1,4 +1,4 @@
-package com.apiratelimiter;
+package com.apiratelimiter.user;
 
 public class PremiumUser extends User {
     

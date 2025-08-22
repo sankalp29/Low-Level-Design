@@ -1,4 +1,4 @@
-package com.apiratelimiter;
+package com.apiratelimiter.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

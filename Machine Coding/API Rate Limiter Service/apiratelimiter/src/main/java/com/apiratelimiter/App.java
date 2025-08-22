@@ -1,6 +1,10 @@
 package com.apiratelimiter;
 
 import com.apiratelimiter.strategies.SlidingWindow;
+import com.apiratelimiter.user.NormalUser;
+import com.apiratelimiter.user.OrganizationUser;
+import com.apiratelimiter.user.PremiumUser;
+import com.apiratelimiter.user.User;
 
 public class App 
 {

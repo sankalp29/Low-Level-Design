@@ -5,7 +5,7 @@ import java.util.Deque;
 
 import com.apiratelimiter.RateLimitInfo;
 import com.apiratelimiter.RateLimits;
-import com.apiratelimiter.User;
+import com.apiratelimiter.user.User;
 
 public class SlidingWindow implements RateLimitingAlgorithmStrategy {
 
