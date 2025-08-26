@@ -10,7 +10,7 @@ import com.parkinglot.vehicle.VehicleType;
 
 public class ParkingSpotFinderService {
     public static Optional<ParkingSpot> findSpot(ParkingLot parkingLot, VehicleType vehicleType) {
-        ParkingSpotType parkingSpotType = parkingLot.getVehicleTypeToSpotType().get(vehicleType);
+        ParkingSpotType parkingSpotType = parkingLot.getVehicleSpotMappingStrategy().getSpotTypeForVehicle(vehicleType);
         List<ParkingSpot> parkingSpots = parkingLot.getParkingSpotMap().get(parkingSpotType);
         for (ParkingSpot parkingSpot : parkingSpots) {
             if (parkingSpot.isFree()) {

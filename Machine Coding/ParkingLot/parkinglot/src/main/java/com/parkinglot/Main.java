@@ -7,6 +7,10 @@ import com.parkinglot.exception.IllegalParkingTicket;
 import com.parkinglot.exception.SlotAlreadyFreeException;
 import com.parkinglot.parkingSpot.ParkingSpotType;
 import com.parkinglot.parkingTicket.ParkingTicket;
+import com.parkinglot.parkingTicket.ParkingTicketRepository;
+import com.parkinglot.service.ParkingService;
+import com.parkinglot.service.ParkingServiceImpl;
+import com.parkinglot.strategy.DefaultVehicleSpotMapping;
 import com.parkinglot.vehicle.Car;
 import com.parkinglot.vehicle.Motorcycle;
 import com.parkinglot.vehicle.Vehicle;
@@ -24,6 +28,7 @@ public class Main {
             parkingLot1 = ParkingLot.builder()
                                             .setAddress("CCM Nashik")
                                             .setName("CCM Parking")
+                                            .setVehicleSpotMappingStrategy(new DefaultVehicleSpotMapping())
                                             .addParkingSpots(ParkingSpotType.COMPACT, 1)
                                             .addParkingSpots(ParkingSpotType.REGULAR, 1)
                                             .addParkingSpots(ParkingSpotType.OVERSIZED, 1)
@@ -32,20 +37,22 @@ public class Main {
             System.out.println(e);
         }
         parkingLot1.display();
+        
+        ParkingService parkingService = new ParkingServiceImpl(parkingLot1, new ParkingTicketRepository());
         Vehicle motorcycle = new Motorcycle("R15", "MH01FH6453");
         Vehicle car = new Car("Vento", "MH01FH8935");
-        final ParkingLot parkingLot = parkingLot1;
+        final ParkingService service = parkingService;
 
         Runnable task1 = new Runnable() {
             public void run() {                
-                Optional<ParkingTicket> parkingTicket = parkingLot.findSpot(motorcycle);
+                Optional<ParkingTicket> parkingTicket = service.parkVehicle(motorcycle);
                 System.out.println("Parking Ticket 1 : " + parkingTicket);
             }
         };
 
         Runnable task2 = new Runnable() {
             public void run() {                
-                Optional<ParkingTicket> parkingTicket = parkingLot.findSpot(car);
+                Optional<ParkingTicket> parkingTicket = service.parkVehicle(car);
                 System.out.println("Parking Ticket 2 : " + parkingTicket);
             }
         };
@@ -65,6 +72,7 @@ public class Main {
             parkingLot1 = ParkingLot.builder()
                                             .setAddress("CCM Nashik")
                                             .setName("CCM Parking")
+                                            .setVehicleSpotMappingStrategy(new DefaultVehicleSpotMapping())
                                             .addParkingSpots(ParkingSpotType.COMPACT, 1)
                                             .addParkingSpots(ParkingSpotType.REGULAR, 1)
                                             .addParkingSpots(ParkingSpotType.OVERSIZED, 1)
@@ -74,20 +82,21 @@ public class Main {
         }
         parkingLot1.display();
 
+        ParkingService parkingService = new ParkingServiceImpl(parkingLot1, new ParkingTicketRepository());
         Vehicle motorcycle1 = new Motorcycle("R15", "MH01FH6453");
         Vehicle motorcycle2 = new Motorcycle("Ninja", "MH01FH8935");
-        final ParkingLot parkingLot = parkingLot1;
+        final ParkingService service = parkingService;
 
         Runnable task1 = new Runnable() {
             public void run() {                
-                Optional<ParkingTicket> parkingTicket = parkingLot.findSpot(motorcycle1);
+                Optional<ParkingTicket> parkingTicket = service.parkVehicle(motorcycle1);
                 System.out.println("Parking Ticket 1 : " + parkingTicket);
             }
         };
 
         Runnable task2 = new Runnable() {
             public void run() {                
-                Optional<ParkingTicket> parkingTicket = parkingLot.findSpot(motorcycle2);
+                Optional<ParkingTicket> parkingTicket = service.parkVehicle(motorcycle2);
                 System.out.println("Parking Ticket 2 : " + parkingTicket);
             }
         };
@@ -107,6 +116,7 @@ public class Main {
             parkingLot1 = ParkingLot.builder()
                                             .setAddress("CCM Nashik")
                                             .setName("CCM Parking")
+                                            .setVehicleSpotMappingStrategy(new DefaultVehicleSpotMapping())
                                             .addParkingSpots(ParkingSpotType.COMPACT, 1)
                                             .addParkingSpots(ParkingSpotType.REGULAR, 1)
                                             .addParkingSpots(ParkingSpotType.OVERSIZED, 1)
@@ -115,23 +125,25 @@ public class Main {
             System.out.println(e);
         }
         parkingLot1.display();
+        
+        ParkingService parkingService = new ParkingServiceImpl(parkingLot1, new ParkingTicketRepository());
         Vehicle motorcycle1 = new Motorcycle("R15", "MH01FH6453");
         Vehicle motorcycle2 = new Motorcycle("Ninja", "MH01FH8935");
         
-        Optional<ParkingTicket> parkingTicket1 = parkingLot1.findSpot(motorcycle1);
+        Optional<ParkingTicket> parkingTicket1 = parkingService.parkVehicle(motorcycle1);
         System.out.println("Parking Ticket 1 : " + parkingTicket1);
-        Optional<ParkingTicket> parkingTicket2 = parkingLot1.findSpot(motorcycle2);
+        Optional<ParkingTicket> parkingTicket2 = parkingService.parkVehicle(motorcycle2);
         System.out.println("Parking Ticket 2 : " + parkingTicket2);
         parkingLot1.display();
 
         try {
             Thread.sleep(10000);
-            parkingLot1.exit(parkingTicket1.get());
+            parkingService.exitVehicle(parkingTicket1.get());
         } catch (IllegalParkingTicket | SlotAlreadyFreeException | InterruptedException e) {
             e.printStackTrace();
         }
         parkingLot1.display();
-        parkingTicket2 = parkingLot1.findSpot(motorcycle2);
+        parkingTicket2 = parkingService.parkVehicle(motorcycle2);
         System.out.println("** After Parking Vacated **: \nParking Ticket 2 : " + parkingTicket2);
     }
 }

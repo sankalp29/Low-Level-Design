@@ -1,7 +1,7 @@
 package com.parkinglot.parkingTicket;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.parkinglot.ParkingLot;
 
@@ -17,6 +17,6 @@ public class ParkingTicketRepository implements IParkingTicketRepository{
     }
 
     public ParkingTicketRepository() {
-        this.parkingTickets = new HashSet<>();
+        this.parkingTickets = ConcurrentHashMap.newKeySet();
     }
 }

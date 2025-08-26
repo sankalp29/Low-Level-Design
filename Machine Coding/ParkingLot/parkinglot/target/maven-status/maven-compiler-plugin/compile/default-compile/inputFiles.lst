@@ -10,6 +10,7 @@
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingSpot/ParkingSpot.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingSpot/ParkingSpotType.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingSpot/SpotStatus.java
+/Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingTicket/IParkingTicketRepository.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingTicket/ParkingTicket.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingTicket/ParkingTicketRepository.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/parkingTicket/TicketStatus.java
@@ -20,6 +21,10 @@
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/payment/PaymentMode.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/payment/PaymentProcessor.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/payment/UPI.java
+/Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/service/ParkingService.java
+/Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/service/ParkingServiceImpl.java
+/Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/strategy/DefaultVehicleSpotMapping.java
+/Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/strategy/VehicleSpotMappingStrategy.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/vehicle/Car.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/vehicle/Motorcycle.java
 /Users/sankalpbhagwat/Desktop/Low-Level-Design/Machine Coding/ParkingLot/parkinglot/src/main/java/com/parkinglot/vehicle/Truck.java

@@ -3,19 +3,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.parkinglot.exception.IllegalParkingSpotNumberException;
-import com.parkinglot.exception.IllegalParkingTicket;
-import com.parkinglot.exception.SlotAlreadyFreeException;
 import com.parkinglot.parkingSpot.ParkingSpot;
 import com.parkinglot.parkingSpot.ParkingSpotType;
-import com.parkinglot.parkingTicket.IParkingTicketRepository;
-import com.parkinglot.parkingTicket.ParkingTicket;
-import com.parkinglot.parkingTicket.ParkingTicketRepository;
-import com.parkinglot.payment.PaymentProcessor;
-import com.parkinglot.vehicle.Vehicle;
-import com.parkinglot.vehicle.VehicleType;
+import com.parkinglot.strategy.VehicleSpotMappingStrategy;
 
 import lombok.Getter;
 
@@ -24,30 +16,7 @@ public class ParkingLot {
     private final String address;
     private final String name;
     private final Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap;
-    private final Map<VehicleType, ParkingSpotType> vehicleTypeToSpotType;
-    private final IParkingTicketRepository parkingTicketRepository;
-
-    public Optional<ParkingTicket> findSpot(Vehicle vehicle) {
-        Optional<ParkingSpot> parkingSpot = ParkingSpotFinderService.findSpot(this, vehicle.getVehicleType());
-        if (parkingSpot.isEmpty()) {
-            System.out.println("No parking spot was found!");
-            return Optional.empty();
-        }
-        ParkingTicket parkingTicket = new ParkingTicket(vehicle, parkingSpot.get());
-        parkingTicketRepository.storeTicket(this, parkingTicket);
-        return Optional.of(parkingTicket);
-    }
-
-    public void exit(ParkingTicket parkingTicket) throws IllegalParkingTicket, SlotAlreadyFreeException {
-        if (!parkingTicketRepository.find(parkingTicket)) {
-            throw new IllegalParkingTicket("No such parking ticket exists");
-        }
-        parkingTicket.setExitTime();
-        parkingTicket.getParkingSpot().freeSlot();
-        double parkingFare = FareService.calculateFare(parkingTicket);
-        PaymentProcessor.processPayment(parkingFare);
-        parkingTicket.exit();
-    }
+    private final VehicleSpotMappingStrategy vehicleSpotMappingStrategy;
 
     public void display() {
         ParkingLotDisplay.display(this);
@@ -57,6 +26,7 @@ public class ParkingLot {
         private String address;
         private String name;
         private final Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap;
+        private VehicleSpotMappingStrategy vehicleSpotMappingStrategy;
 
         ParkingLotBuilder() {
             parkingSpotMap = new HashMap<>();
@@ -69,6 +39,11 @@ public class ParkingLot {
 
         public ParkingLotBuilder setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public ParkingLotBuilder setVehicleSpotMappingStrategy(VehicleSpotMappingStrategy strategy) {
+            this.vehicleSpotMappingStrategy = strategy;
             return this;
         }
 
@@ -86,7 +61,7 @@ public class ParkingLot {
         }
 
         public ParkingLot build() {
-            return new ParkingLot(address, name, parkingSpotMap);
+            return new ParkingLot(address, name, parkingSpotMap, vehicleSpotMappingStrategy);
         }
     }
 
@@ -94,14 +69,11 @@ public class ParkingLot {
         return new ParkingLotBuilder();
     }
 
-    private ParkingLot(String address, String name, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap) {
+    private ParkingLot(String address, String name, Map<ParkingSpotType, List<ParkingSpot>> parkingSpotMap, 
+                      VehicleSpotMappingStrategy vehicleSpotMappingStrategy) {
         this.address = address;
         this.name = name;
         this.parkingSpotMap = parkingSpotMap;
-        this.vehicleTypeToSpotType = new HashMap<>();
-        this.parkingTicketRepository = new ParkingTicketRepository();
-        vehicleTypeToSpotType.put(VehicleType.MOTORCYCLE, ParkingSpotType.COMPACT);
-        vehicleTypeToSpotType.put(VehicleType.CAR, ParkingSpotType.REGULAR);
-        vehicleTypeToSpotType.put(VehicleType.TRUCK, ParkingSpotType.OVERSIZED);
+        this.vehicleSpotMappingStrategy = vehicleSpotMappingStrategy;
     }
 }
