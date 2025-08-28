@@ -11,6 +11,7 @@ import com.elevatorsystemdesign.exceptions.InvalidFloorRequestedException;
 import com.elevatorsystemdesign.exceptions.InvalidNumberOfElevatorsException;
 import com.elevatorsystemdesign.exceptions.InvalidNumberOfFloorsException;
 import com.elevatorsystemdesign.model.ElevatorCar;
+import com.elevatorsystemdesign.model.ElevatorRequest;
 
 import lombok.Getter;
 
@@ -42,7 +43,7 @@ public class ElevatorManager {
         this.elevatorRoutingStrategy = routingStrategy;
     }
 
-    public synchronized ElevatorCar requestElevator(final int sourceFloor, final int destinationFloor, final Direction direction) throws InvalidFloorRequestedException {
+    private ElevatorCar requestElevator(final int sourceFloor, final int destinationFloor, final Direction direction) throws InvalidFloorRequestedException {
         if (sourceFloor < 0 || sourceFloor > floors) {
             throw new InvalidFloorRequestedException("Invalid floor requested");
         }
@@ -50,6 +51,10 @@ public class ElevatorManager {
         ElevatorCar elevator = elevatorRoutingStrategy.findElevator(elevators, sourceFloor, direction);
         elevator.addRequest(sourceFloor, destinationFloor);
         return elevator;
+    }
+    
+    public synchronized ElevatorCar requestElevator(ElevatorRequest request) throws InvalidFloorRequestedException {
+        return requestElevator(request.getSourceFloor(), request.getDestinationFloor(), request.getDirection());
     }
 
     public void stop() {

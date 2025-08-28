@@ -6,6 +6,7 @@ import com.elevatorsystemdesign.exceptions.InvalidFloorRequestedException;
 import com.elevatorsystemdesign.exceptions.InvalidNumberOfElevatorsException;
 import com.elevatorsystemdesign.exceptions.InvalidNumberOfFloorsException;
 import com.elevatorsystemdesign.model.ElevatorCar;
+import com.elevatorsystemdesign.model.ElevatorRequest;
 
 public class Main {
     public static void main(String[] args) throws InvalidNumberOfElevatorsException, InvalidNumberOfFloorsException, InvalidFloorRequestedException, InterruptedException {
@@ -16,7 +17,8 @@ public class Main {
     private static void runFourElevatorCalls(ElevatorManager elevatorManager) throws InterruptedException {
         Runnable task1 = () -> {
             try {
-                ElevatorCar elevator1 = elevatorManager.requestElevator(12, 13, Direction.UP);
+                ElevatorRequest request = new ElevatorRequest(12, 13, Direction.UP);
+                ElevatorCar elevator1 = elevatorManager.requestElevator(request);
                 System.out.println("Task 1: Got Elevator " + elevator1.getElevatorId());
             } catch (InvalidFloorRequestedException e) {
                 e.printStackTrace();
@@ -25,7 +27,8 @@ public class Main {
         
         Runnable task2 = () -> {
             try {
-                ElevatorCar elevator2 = elevatorManager.requestElevator(5, 1, Direction.DOWN);
+                ElevatorRequest request = new ElevatorRequest(5, 1, Direction.DOWN);
+                ElevatorCar elevator2 = elevatorManager.requestElevator(request);
                 System.out.println("Task 2: Got Elevator " + elevator2.getElevatorId());
             } catch (InvalidFloorRequestedException e) {
                 e.printStackTrace();
@@ -34,7 +37,8 @@ public class Main {
 
         Runnable task3 = () -> {
             try {
-                ElevatorCar elevator2 = elevatorManager.requestElevator(10, 14, Direction.DOWN);
+                ElevatorRequest request = new ElevatorRequest(10, 14, Direction.DOWN);
+                ElevatorCar elevator2 = elevatorManager.requestElevator(request);
                 System.out.println("Task 3: Got Elevator " + elevator2.getElevatorId());
             } catch (InvalidFloorRequestedException  e) {
                 e.printStackTrace();
@@ -48,6 +52,10 @@ public class Main {
         t1.start();
         t2.start();
         t3.start();
+
+        t1.join();
+        t2.join();
+        t3.join();
 
         elevatorManager.stop();
     }

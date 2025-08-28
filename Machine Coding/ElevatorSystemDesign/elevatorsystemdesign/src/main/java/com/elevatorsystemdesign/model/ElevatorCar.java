@@ -37,16 +37,19 @@ public class ElevatorCar implements Runnable {
     }
 
     public synchronized void addRequest(final int sourceFloor, final int destinationFloor) throws InvalidFloorRequestedException {
-        System.out.println("New request made to Elevator " + elevatorId);
         if (sourceFloor < 0 || sourceFloor > floors) {
             throw new InvalidFloorRequestedException("Requested floor does not exist.");
         }
-        
+        System.out.println("New request made to Elevator " + elevatorId);
         if (currentFloor != sourceFloor) {
             requestQueue.add(sourceFloor);
         }
         requestQueue.add(destinationFloor);
         this.notify();
+    }
+    
+    public synchronized void addRequest(ElevatorRequest request) throws InvalidFloorRequestedException {
+        addRequest(request.getSourceFloor(), request.getDestinationFloor());
     }
 
     private void moveToFloor(final int floorNumber) {
