@@ -1,31 +1,51 @@
-Problem Statement
-Create a snake and ladder application. The application should take as input (from the command line or a file):
+# Snake and Ladder Game 🎲🐍🪜
 
-Number of snakes (s) followed by s lines each containing 2 numbers denoting the head and tail positions of the snake.
-Number of ladders (l) followed by l lines each containing 2 numbers denoting the start and end positions of the ladder.
-Number of players (p) followed by p lines each containing a name.
-After taking these inputs, you should print all the moves in the form of the current player name followed by a random number between 1 to 6 denoting the die roll and the initial and final position based on the move.
-Format: <player_name> rolled a <dice_value> and moved from <initial_position> to <final_position>
+## 📌 Problem Statement
+Design and implement a **Snake and Ladder application**.  
+The game should accept input (from the command line or a file) and simulate the turns of players until one of them wins.
 
-When someone wins the game, print that the player won the game.
-Format: <player_name> wins the game
+---
 
-Rules of the game
-The board will have 100 cells numbered from 1 to 100.
-The game will have a six sided dice numbered from 1 to 6 and will always give a random number on rolling it.
-Each player has a piece which is initially kept outside the board (i.e., at position 0).
-Each player rolls the dice when their turn comes.
-Based on the dice value, the player moves their piece forward that number of cells. Ex: If the dice value is 5 and the piece is at position 21, the player will put their piece at position 26 now (21+5).
-A player wins if it exactly reaches the position 100 and the game ends there.
-After the dice roll, if a piece is supposed to move outside position 100, it does not move.
-The board also contains some snakes and ladders.
-Each snake will have its head at some number and its tail at a smaller number.
-Whenever a piece ends up at a position with the head of the snake, the piece should go down to the position of the tail of that snake.
-Each ladder will have its start position at some number and end position at a larger number.
-Whenever a piece ends up at a position with the start of the ladder, the piece should go up to the position of the end of that ladder.
-There could be another snake/ladder at the tail of the snake or the end position of the ladder and the piece should go up/down accordingly.
-Assumptions you can take apart from those already mentioned in rules
-There won’t be a snake at 100.
-There won’t be multiple snakes/ladders at the same start/head point.
-It is possible to reach 100, i.e., it is possible to win the game.
-Snakes and Ladders do not form an infinite loop.
+## 📝 Input Format
+1. **Number of snakes** (`s`), followed by `s` lines containing 2 integers each:
+   - **Head position** of the snake.
+   - **Tail position** of the snake.
+
+2. **Number of ladders** (`l`), followed by `l` lines containing 2 integers each:
+   - **Start position** of the ladder.
+   - **End position** of the ladder.
+
+3. **Number of players** (`p`), followed by `p` lines each containing a **player name**.
+
+---
+
+## 🎮 Output Format
+For each move, print:
+<player_name> rolled a <dice_value> and moved from <initial_position> to <final_position>
+
+When a player wins, print:
+<player_name> wins the game
+
+---
+
+## 📏 Rules of the Game
+- The board has **100 cells** numbered from **1 to 100**.
+- Each player starts at **position 0** (outside the board).
+- Players roll a **six-sided dice (1–6)** on their turn.
+- Movement:
+  - Player moves forward by the dice value.
+  - If a player overshoots position 100, they **do not move**.
+  - Landing on a **snake head** → move down to its **tail**.
+  - Landing on a **ladder base** → climb up to its **end**.
+  - If the new position has another snake/ladder, continue moving accordingly until a free cell is reached.
+- A player **wins** when they **exactly reach 100**.
+
+---
+
+## ✅ Assumptions
+- No snake at position **100**.
+- No duplicate snake or ladder starts at the same cell.
+- The game setup ensures it’s always possible to win.
+- Snakes and ladders will **not form infinite loops**.
+
+---
