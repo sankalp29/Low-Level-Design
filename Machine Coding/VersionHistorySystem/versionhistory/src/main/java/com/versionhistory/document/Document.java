@@ -1,6 +1,4 @@
 package com.versionhistory.document;
-
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -16,8 +14,7 @@ import lombok.ToString;
 public class Document {
     private final String documentId;
     private final User creator;
-    private DocumentVersion activeVersion;
-    private List<User> userAccessList;
+    private volatile DocumentVersion activeVersion;
     private ReentrantReadWriteLock lock;
 
     public Document(User creator) {

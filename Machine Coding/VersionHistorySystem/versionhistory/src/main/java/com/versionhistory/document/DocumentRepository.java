@@ -1,11 +1,12 @@
 package com.versionhistory.document;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Iterator;
 
 import com.versionhistory.constants.AccessLevel;
 import com.versionhistory.interfaces.IDocumentRepository;
@@ -16,10 +17,15 @@ public class DocumentRepository implements IDocumentRepository {
     private final Map<String, Map<String, AccessLevel>> usersDocAccess;
 
     @Override
-    public void addNewDocumentVersion(Document document, DocumentVersion documentVersion) {
+    public void createDocument(Document document, DocumentVersion initialVersion) {
         documents.put(document.getDocumentId(), document);
-        documentVersionHistory.putIfAbsent(document.getDocumentId(), new CopyOnWriteArrayList<>());
-        documentVersionHistory.get(document.getDocumentId()).add(documentVersion);
+        documentVersionHistory.put(document.getDocumentId(), new ArrayList<>());
+        documentVersionHistory.get(document.getDocumentId()).add(initialVersion);
+    }
+
+    @Override
+    public void addNewDocumentVersion(String documentId, DocumentVersion documentVersion) {
+        documentVersionHistory.get(documentId).add(documentVersion);
     }
 
     @Override
@@ -40,9 +46,15 @@ public class DocumentRepository implements IDocumentRepository {
     }
 
     @Override
+    public List<DocumentVersion> listDocumentVersions(String documentId) {
+        return Collections.unmodifiableList(new ArrayList<>(documentVersionHistory.getOrDefault(documentId, new ArrayList<>())));
+    }
+
+    @Override
     public void deleteDocument(String documentId) {
         documents.remove(documentId);
         documentVersionHistory.remove(documentId);
+        removeAllAccessForDocument(documentId);
     }
 
     @Override
@@ -52,8 +64,31 @@ public class DocumentRepository implements IDocumentRepository {
     }
 
     @Override
+    public void unsetUserAccess(String documentId, String recipient) {
+        Map<String, AccessLevel> perUser = usersDocAccess.get(recipient);
+        if (perUser != null) {
+            perUser.remove(documentId);
+            if (perUser.isEmpty()) {
+                usersDocAccess.remove(recipient);
+            }
+        }
+    }
+
+    @Override
     public Map<String, AccessLevel> getAccessMap(String userId) {
         return usersDocAccess.getOrDefault(userId, new HashMap<>());
+    }
+
+    @Override
+    public void removeAllAccessForDocument(String documentId) {
+        for (Iterator<Map.Entry<String, Map<String, AccessLevel>>> it = usersDocAccess.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, Map<String, AccessLevel>> entry = it.next();
+            Map<String, AccessLevel> perUser = entry.getValue();
+            perUser.remove(documentId);
+            if (perUser.isEmpty()) {
+                it.remove();
+            }
+        }
     }
 
     public DocumentRepository() {
