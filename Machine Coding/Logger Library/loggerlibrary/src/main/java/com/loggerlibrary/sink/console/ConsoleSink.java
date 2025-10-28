@@ -1,6 +1,8 @@
-package com.loggerlibrary.sink;
+package com.loggerlibrary.sink.console;
 
 import java.util.Map;
+
+import com.loggerlibrary.sink.AbstractSink;
 
 public class ConsoleSink extends AbstractSink {
 

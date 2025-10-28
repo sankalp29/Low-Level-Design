@@ -2,7 +2,11 @@ package com.loggerlibrary;
 
 import java.nio.file.Paths;
 
-import com.loggerlibrary.sink.DatabaseSink;
+import com.loggerlibrary.core.LoggerConfig;
+import com.loggerlibrary.core.LoggerLibraryService;
+import com.loggerlibrary.model.LogLevel;
+import com.loggerlibrary.model.Message;
+import com.loggerlibrary.sink.db.DatabaseSink;
 
 public class Main {
     public static void main(String[] args) {

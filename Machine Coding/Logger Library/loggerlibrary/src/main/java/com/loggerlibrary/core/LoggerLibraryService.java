@@ -1,4 +1,4 @@
-package com.loggerlibrary;
+package com.loggerlibrary.core;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,8 +9,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.loggerlibrary.model.LogLevel;
+import com.loggerlibrary.model.Message;
 import com.loggerlibrary.sink.AbstractSink;
-import com.loggerlibrary.sink.SinkFactory;
+import com.loggerlibrary.sink.factory.SinkFactory;
 
 public class LoggerLibraryService {
     private static volatile LoggerLibraryService instance;

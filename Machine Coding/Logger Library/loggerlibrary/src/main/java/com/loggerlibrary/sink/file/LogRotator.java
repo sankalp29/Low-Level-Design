@@ -1,4 +1,4 @@
-package com.loggerlibrary.sink;
+package com.loggerlibrary.sink.file;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,22 +8,32 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.GZIPOutputStream;
 
+import com.loggerlibrary.sink.file.rotation.RotationContext;
+import com.loggerlibrary.sink.file.rotation.RotationStrategy;
+import com.loggerlibrary.sink.file.rotation.SizeBasedRotation;
+
 import lombok.Getter;
 
 @Getter
 public class LogRotator {
     private final String fileLocation;
-    private final long maxFileSizeBytes;
     private final int maxBackupFiles;
+    private final RotationStrategy rotationStrategy;
 
-    public LogRotator(String fileLocation, long maxFileSizeBytes, int maxBackupFiles) {
+    // public LogRotator(String fileLocation, RotationStrategy rotationStrategy, long maxFileSizeBytes, int maxBackupFiles) {
+    //     this.fileLocation = fileLocation;
+    //     this.maxBackupFiles = maxBackupFiles;
+    //     this.rotationStrategy = rotationStrategy;
+    // }
+
+    public LogRotator(String fileLocation, RotationStrategy rotationStrategy, int maxBackupFiles) {
         this.fileLocation = fileLocation;
-        this.maxFileSizeBytes = maxFileSizeBytes;
         this.maxBackupFiles = maxBackupFiles;
+        this.rotationStrategy = rotationStrategy;
     }
 
     public boolean shouldRotate(long currentSize, int entrySize) {
-        return currentSize + entrySize > maxFileSizeBytes;
+        return rotationStrategy.shouldRotate(RotationContext.of(fileLocation, currentSize, entrySize));
     }
 
     public long rotate(long currentFileSize) {
@@ -54,7 +64,7 @@ public class LogRotator {
             } catch (Exception e) {
                 System.err.println("[LogRotator] Failed to compress/delete current log: " + e.getMessage());
             }
-            return 0L; // reset size after rotation
+            return rotationStrategy.sizeAfterRotate();
         }
         return currentFileSize;
     }

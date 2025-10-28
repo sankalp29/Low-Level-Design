@@ -1,7 +1,9 @@
-package com.loggerlibrary;
+package com.loggerlibrary.core;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.loggerlibrary.model.LogLevel;
 
 import lombok.Getter;
 

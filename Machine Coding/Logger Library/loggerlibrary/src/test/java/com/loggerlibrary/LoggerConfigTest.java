@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import com.loggerlibrary.core.LoggerConfig;
+import com.loggerlibrary.model.LogLevel;
+
 public class LoggerConfigTest {
 
     @Test

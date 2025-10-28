@@ -2,6 +2,8 @@ package com.loggerlibrary;
 
 import java.lang.reflect.Field;
 
+import com.loggerlibrary.core.LoggerLibraryService;
+
 final class TestUtils {
     private TestUtils() {}
 

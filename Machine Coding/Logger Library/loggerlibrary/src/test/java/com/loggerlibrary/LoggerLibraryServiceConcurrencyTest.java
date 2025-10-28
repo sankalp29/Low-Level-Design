@@ -3,8 +3,12 @@ package com.loggerlibrary;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.loggerlibrary.sink.FileSink;
+import com.loggerlibrary.core.LoggerConfig;
+import com.loggerlibrary.core.LoggerLibraryService;
+import com.loggerlibrary.model.LogLevel;
+import com.loggerlibrary.model.Message;
 import com.loggerlibrary.sink.TestSink;
+import com.loggerlibrary.sink.file.FileSink;
 
 import java.io.File;
 import java.nio.file.Paths;

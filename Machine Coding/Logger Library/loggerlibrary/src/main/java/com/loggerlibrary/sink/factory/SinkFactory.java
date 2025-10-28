@@ -1,6 +1,9 @@
-package com.loggerlibrary.sink;
+package com.loggerlibrary.sink.factory;
 
-import com.loggerlibrary.LoggerConfig;
+import com.loggerlibrary.core.LoggerConfig;
+import com.loggerlibrary.sink.AbstractSink;
+import com.loggerlibrary.sink.console.ConsoleSink;
+import com.loggerlibrary.sink.file.FileSink;
 
 public class SinkFactory {
     public static AbstractSink getSink(LoggerConfig config) {

@@ -2,6 +2,9 @@ package com.loggerlibrary;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.loggerlibrary.core.LoggerLibraryService;
+import com.loggerlibrary.model.LogLevel;
+import com.loggerlibrary.model.Message;
 import com.loggerlibrary.sink.TestSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

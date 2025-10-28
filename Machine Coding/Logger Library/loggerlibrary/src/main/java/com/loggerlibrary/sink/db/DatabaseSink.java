@@ -1,6 +1,8 @@
-package com.loggerlibrary.sink;
+package com.loggerlibrary.sink.db;
 
 import java.util.Map;
+
+import com.loggerlibrary.sink.AbstractSink;
 
 import lombok.Getter;
 

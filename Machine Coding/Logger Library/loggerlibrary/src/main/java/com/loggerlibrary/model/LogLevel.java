@@ -1,4 +1,4 @@
-package com.loggerlibrary;
+package com.loggerlibrary.model;
 
 import lombok.Getter;
 
