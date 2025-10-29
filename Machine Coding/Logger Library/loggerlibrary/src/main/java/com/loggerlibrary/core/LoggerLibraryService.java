@@ -2,6 +2,7 @@ package com.loggerlibrary.core;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +14,21 @@ import com.loggerlibrary.model.LogLevel;
 import com.loggerlibrary.model.Message;
 import com.loggerlibrary.sink.AbstractSink;
 import com.loggerlibrary.sink.factory.SinkFactory;
+import com.loggerlibrary.core.enrich.MessageFormatter;
+import com.loggerlibrary.core.enrich.Enricher;
+import com.loggerlibrary.core.enrich.BaseFormatter;
+import com.loggerlibrary.core.enrich.TrackingIdEnricher;
+import com.loggerlibrary.core.enrich.HostEnricher;
+import com.loggerlibrary.core.enrich.InstanceEnricher;
 
 public class LoggerLibraryService {
     private static volatile LoggerLibraryService instance;
     private final Map<LogLevel, List<AbstractSink>> levelToSinks;
     private final ExecutorService asyncSingle;
     private final ExecutorService asyncMulti;
+    // Enrichment pipeline
+    private final MessageFormatter baseFormatter;
+    private final List<Enricher> enrichers;
 
     public void registerSink(AbstractSink sink) {
         if (sink == null) throw new IllegalArgumentException("Sink cannot be null");
@@ -47,7 +57,11 @@ public class LoggerLibraryService {
         for (AbstractSink sink : sinks) {
             // Enrich once outside for both sync/async paths
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(sink.getTimestampFormat()));
-            String enrichedMessage = enrichMessage(message, timestamp);
+            String formatted = baseFormatter.format(message, timestamp);
+            for (Enricher enricher : enrichers) {
+                formatted = enricher.apply(formatted, message);
+            }
+            String enrichedMessage = formatted + "\n";
             
             String writeMode = sink.getConfiguration("write_mode") != null ? sink.getConfiguration("write_mode") : "SYNC";
             String threadModel = sink.getConfiguration("thread_model") != null ? sink.getConfiguration("thread_model") : "SINGLE";
@@ -71,38 +85,6 @@ public class LoggerLibraryService {
         }
     }
 
-    private String enrichMessage(Message message, String timestamp) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(message.getLogLevel())
-          .append(" [").append(timestamp).append("] ")
-          .append(message.getContent())
-          .append(" ").append(message.getNamespace())
-          .append(" ID:").append(message.getMessageId());
-    
-        if (message.getTrackingId() != null) {
-            sb.append(" TrackingID:").append(message.getTrackingId());
-        }
-        if (message.getHostId() != null) {
-            sb.append(" Host:").append(message.getHostId());
-        }
-        if (message.getInstanceId() != null) {
-            sb.append(" Instance:").append(message.getInstanceId());
-        }
-    
-        sb.append("\n");
-        return sb.toString();
-    }
-    
-
-    public static LoggerLibraryService getInstance() {
-        if (instance == null) {
-            synchronized (LoggerLibraryService.class) {
-                if (instance == null) instance = new LoggerLibraryService();
-            }
-        }
-        return instance;
-    }
-
     private LoggerLibraryService() {
         levelToSinks = new EnumMap<>(LogLevel.class);
         for (LogLevel level : LogLevel.values()) {
@@ -111,6 +93,12 @@ public class LoggerLibraryService {
         asyncSingle = Executors.newSingleThreadExecutor(r -> new Thread(r, "logger-async-single"));
         int poolSize = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
         asyncMulti = Executors.newFixedThreadPool(poolSize, r -> new Thread(r, "logger-async-multi"));
+        // Default pipeline
+        this.baseFormatter = new BaseFormatter();
+        this.enrichers = new ArrayList<>();
+        this.enrichers.add(new TrackingIdEnricher());
+        this.enrichers.add(new HostEnricher());
+        this.enrichers.add(new InstanceEnricher());
     }
 
     public void shutdown() {
