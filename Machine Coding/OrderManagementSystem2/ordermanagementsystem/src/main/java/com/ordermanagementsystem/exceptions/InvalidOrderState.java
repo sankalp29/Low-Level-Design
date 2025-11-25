@@ -1,7 +1,0 @@
-package com.ordermanagementsystem.exceptions;
-
-public class InvalidOrderState extends Exception {
-    public InvalidOrderState(String message) {
-        super(message);
-    }
-}
