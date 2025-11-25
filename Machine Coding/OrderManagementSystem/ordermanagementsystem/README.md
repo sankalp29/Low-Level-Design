@@ -20,7 +20,7 @@ For simplicity we will assume that there is only 1 external seller registered on
 Optional:
 Have a mechanism in place to automatically cancel an order and free up the provisional inventory reserved if the order is not confirmed within a particular time duration after creation.
 
-Points to note
+### Points to note
 
 - Your code should cover all the mandatory functionalities mentioned above.
 - Your code should be executable and clean.
@@ -28,7 +28,8 @@ Points to note
 - In case of an exception, proper errorCode must be present.
 - Store the data in-memory for order and the inventory within the system.
 - Your system should also take care of race conditions.
-- How will you be evaluated?
+
+### How will you be evaluated?
 
 - Code should be working.
 - Code readability and testability
