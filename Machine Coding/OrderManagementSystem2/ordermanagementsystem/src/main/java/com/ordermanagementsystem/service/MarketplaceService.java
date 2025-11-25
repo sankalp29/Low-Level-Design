@@ -8,9 +8,10 @@ import com.ordermanagementsystem.constants.SellerType;
 import com.ordermanagementsystem.exceptions.UnknownSellerException;
 import com.ordermanagementsystem.interfaces.IMarketplaceService;
 import com.ordermanagementsystem.model.Inventory;
-import com.ordermanagementsystem.model.Item;
 import com.ordermanagementsystem.model.Marketplace;
-import com.ordermanagementsystem.model.Seller;
+import com.ordermanagementsystem.model.OrderItem;
+import com.ordermanagementsystem.model.seller.InternalSeller;
+import com.ordermanagementsystem.model.seller.Seller;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,7 @@ public class MarketplaceService implements IMarketplaceService {
 
     @Override
     public String registerSeller(String sellerName) {
-        Seller seller = new Seller(sellerName, SellerType.EXTERNAL);
-        marketplace.registerSeller(seller);
+        Seller seller = marketplace.registerSeller(sellerName, SellerType.EXTERNAL);
         return seller.getSellerId();
     }
 
@@ -41,14 +41,16 @@ public class MarketplaceService implements IMarketplaceService {
     }
 
     @Override
-    public Optional<Seller> findSellerAndReserve(List<Item> items) {
-        Seller internalSeller = marketplace.getInternalSeller();
+    public Optional<Seller> findSellerAndReserve(List<OrderItem> items) {
+        InternalSeller internalSeller = (InternalSeller) marketplace.getInternalSeller();
         Inventory internalInventory = internalSeller.getInventory();
         if (internalInventory.reserveItems(items)) return Optional.of(internalSeller);
 
         for (Seller externalSeller : marketplace.getExternalSellers().values()) {
-            Inventory inventory = externalSeller.getInventory();
-            if (inventory.reserveItems(items)) return Optional.of(externalSeller);
+            if (externalSeller.reserveItems(items)) {
+                System.out.println("Reserved from external seller: " + externalSeller);
+                return Optional.of(externalSeller);
+            }
         }
 
         return Optional.empty();

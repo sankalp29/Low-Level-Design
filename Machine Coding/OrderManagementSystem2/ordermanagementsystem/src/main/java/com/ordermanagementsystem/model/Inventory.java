@@ -3,6 +3,7 @@ package com.ordermanagementsystem.model;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -13,47 +14,54 @@ import lombok.Data;
 
 @Data
 public class Inventory {
-    private final Map<String, Item> itemIdToItem;
-    private final Map<String, Integer> itemQuantity;
+    @Data
+    private static class InventoryItem {
+        private Item item;
+        private AtomicInteger quantity;
+
+        public InventoryItem(Item item, Integer quantity) {
+            this.item = item;
+            this.quantity = new AtomicInteger(quantity);
+        }
+    }
+    
+    private final Map<String, InventoryItem> itemById;
     private final Lock lock;
 
     public void addNewItem(Item item, Integer quantity) {
-        itemIdToItem.put(item.getItemId(), item);
-        itemQuantity.put(item.getItemId(), quantity);
+        itemById.put(item.getItemId(), new InventoryItem(item, quantity));
     }
 
     public void addItemToInventory(String itemId, Integer quantity) throws InvalidItemException {
-        if (!itemIdToItem.containsKey(itemId)) throw new InvalidItemException(ExceptionMessages.INVALID_ITEM_EXCEPTION);
-        Item item = itemIdToItem.get(itemId);
-        itemQuantity.put(item.getItemId(), itemQuantity.getOrDefault(item.getItemId(), 0) + quantity);
+        if (!itemById.containsKey(itemId)) throw new InvalidItemException(ExceptionMessages.INVALID_ITEM_EXCEPTION);
+        Item item = itemById.get(itemId).getItem();
+        itemById.get(item.getItemId()).getQuantity().addAndGet(quantity);
     }
 
-    public void releaseInventory(String itemId) {
-        if (!itemIdToItem.containsKey(itemId)) return;
-        Item item = itemIdToItem.get(itemId);
-        itemQuantity.put(item.getItemId(), itemQuantity.get(item.getItemId()) + 1);
+    public void releaseInventory(List<OrderItem> orderItems) {
+        for (OrderItem item : orderItems) {
+            if (!itemById.containsKey(item.getItemId())) continue;
+            itemById.get(item.getItemId()).getQuantity().addAndGet(item.getQuantity());
+        }
     }
 
     public Integer getAvailableQuantity(String itemId) throws InvalidItemException {
-        if (!itemIdToItem.containsKey(itemId)) throw new InvalidItemException(ExceptionMessages.INVALID_ITEM_EXCEPTION);
-        Item item = itemIdToItem.get(itemId);
-        return itemQuantity.get(item.getItemId());
+        if (!itemById.containsKey(itemId)) throw new InvalidItemException(ExceptionMessages.INVALID_ITEM_EXCEPTION);
+        Item item = itemById.get(itemId).getItem();
+        return itemById.get(item.getItemId()).getQuantity().get();
     }
 
-    public boolean reserveItems(List<Item> orderItems) {
+    public boolean reserveItems(List<OrderItem> orderItems) {
         lock.lock();
         try {
-            boolean unavailableItems = false;
-            for (Item item : orderItems) {
-                if (!itemQuantity.containsKey(item.getItemId()) || itemQuantity.get(item.getItemId()) <= 0) {
-                    unavailableItems = true;
+            for (OrderItem item : orderItems) {
+                if (!itemById.containsKey(item.getItemId()) || itemById.get(item.getItemId()).getQuantity().get() < item.getQuantity()) {
+                    return false;
                 }
             }
             
-            if (unavailableItems) return false;
-            
-            for (Item item : orderItems) {
-                itemQuantity.put(item.getItemId(), itemQuantity.get(item.getItemId()) - 1);
+            for (OrderItem item : orderItems) {
+                itemById.get(item.getItemId()).getQuantity().addAndGet(-item.getQuantity());
             }
         } finally {
             lock.unlock();
@@ -62,20 +70,8 @@ public class Inventory {
         return true;
     }
 
-    public void releaseItems(List<Item> orderItems) {
-        lock.lock();
-        try {
-            for (Item item : orderItems) {
-                itemQuantity.put(item.getItemId(), itemQuantity.get(item.getItemId()) + 1);
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public Inventory() {
-        this.itemIdToItem = new ConcurrentHashMap<>();
-        this.itemQuantity = new ConcurrentHashMap<>();
+        this.itemById = new ConcurrentHashMap<>();
         this.lock = new ReentrantLock();
     }
 }

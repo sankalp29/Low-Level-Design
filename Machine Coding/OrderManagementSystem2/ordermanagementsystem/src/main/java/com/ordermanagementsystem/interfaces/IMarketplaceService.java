@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ordermanagementsystem.exceptions.UnknownSellerException;
-import com.ordermanagementsystem.model.Item;
 import com.ordermanagementsystem.model.Marketplace;
-import com.ordermanagementsystem.model.Seller;
+import com.ordermanagementsystem.model.OrderItem;
+import com.ordermanagementsystem.model.seller.Seller;
 
 public interface IMarketplaceService {
 
@@ -18,5 +18,5 @@ public interface IMarketplaceService {
 
     Seller getSellerById(String sellerId) throws UnknownSellerException;
 
-    Optional<Seller> findSellerAndReserve(List<Item> items);
+    Optional<Seller> findSellerAndReserve(List<OrderItem> items);
 }

@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.ordermanagementsystem.exceptions.CustomerAlreadyExistsException;
 import com.ordermanagementsystem.exceptions.InvalidCustomerException;
-import com.ordermanagementsystem.exceptions.InvalidItemException;
+import com.ordermanagementsystem.exceptions.InvalidOrderException;
+import com.ordermanagementsystem.exceptions.InvalidQuantityException;
 import com.ordermanagementsystem.exceptions.ItemsUnavailableException;
-import com.ordermanagementsystem.exceptions.UnknownSellerException;
 import com.ordermanagementsystem.interfaces.ICustomerService;
 import com.ordermanagementsystem.interfaces.IInventoryService;
 import com.ordermanagementsystem.interfaces.IMarketplaceService;
@@ -16,6 +16,7 @@ import com.ordermanagementsystem.model.Address;
 import com.ordermanagementsystem.model.Customer;
 import com.ordermanagementsystem.model.Item;
 import com.ordermanagementsystem.model.Marketplace;
+import com.ordermanagementsystem.model.OrderLineItem;
 import com.ordermanagementsystem.repository.CustomerRepository;
 import com.ordermanagementsystem.repository.OrderRepository;
 import com.ordermanagementsystem.service.CustomerService;
@@ -50,26 +51,38 @@ public class Main {
         Runnable runnable1 = () -> {
             String orderId1;
             try {
-                orderId1 = orderManagementService.createOrder(sankalp.getCustomerId(), List.of(shoes), sankalp.getAddress());
-                System.out.println("OrderId1 = " +orderId1);
-            } catch (InvalidCustomerException | ItemsUnavailableException ex) {
+                OrderLineItem oli = new OrderLineItem(shoes, 3);
+                orderId1 = orderManagementService.createOrder(sankalp.getCustomerId(), List.of(oli), sankalp.getAddress());
+                System.out.println("Before placing order1: " + orderManagementService.getOrderById(orderId1) + "\n ");
+                
+                orderManagementService.confirmOrder(orderId1);
+                System.out.println("After placing order1: " + orderManagementService.getOrderById(orderId1) + "\n ");
+            } catch (RuntimeException | InvalidCustomerException | ItemsUnavailableException | InvalidOrderException e) {
             }
             
         };
         
         Runnable runnable2 = () -> {
             try {
-                String orderId2 = orderManagementService.createOrder(janvi.getCustomerId(), List.of(shoes), janvi.getAddress());
-                System.out.println("OrderId2 = " +orderId2);
-            } catch (InvalidCustomerException | ItemsUnavailableException ex) {
+                OrderLineItem oli = new OrderLineItem(shoes, 2);
+                String orderId2 = orderManagementService.createOrder(janvi.getCustomerId(), List.of(oli), janvi.getAddress());
+                System.out.println("Before placing order2: " + orderManagementService.getOrderById(orderId2) + "\n ");
+
+                orderManagementService.confirmOrder(orderId2);
+                System.out.println("After placing order2: " + orderManagementService.getOrderById(orderId2) + "\n ");
+            } catch (InvalidCustomerException | ItemsUnavailableException | InvalidOrderException ex) {
             }
         };
         
         Thread t1 = new Thread(runnable1);
         Thread t2 = new Thread(runnable2);
         
-        inventoryService.addNewItem(shoes, 2);
-        inventoryService.addNewItem(socks, 2);
+        try {
+            inventoryService.addNewItem(shoes, 2);
+            inventoryService.addNewItem(socks, 2);
+        } catch (InvalidQuantityException e) {
+            e.printStackTrace();
+        }
         
         t1.start();
         t2.start();
@@ -77,12 +90,6 @@ public class Main {
             t1.join();
             t2.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            inventoryService.getAvailableInventory("26f49e6c-679a-4041-86a5-f243047cb26d", "26f49e6c-679a-4041-86a5-f243047cb26d");
-        } catch (InvalidItemException | UnknownSellerException e) {
             e.printStackTrace();
         }
     }

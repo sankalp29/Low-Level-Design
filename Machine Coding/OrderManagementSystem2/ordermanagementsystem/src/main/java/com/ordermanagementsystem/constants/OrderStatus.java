@@ -1,11 +1,11 @@
 package com.ordermanagementsystem.constants;
 
 public enum OrderStatus {
-    FREEZED,
+    CREATED,
     PLACED,
     PACKAGED,
     SHIPPED,
-    DELIVERED,
+    FULFILLED,
     DELIVERY_FAILED,
     CANCELLED
 }
