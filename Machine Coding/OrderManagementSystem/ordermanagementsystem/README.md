@@ -6,12 +6,16 @@ Inventory: This is the item store available to sell and also has the price per u
 **EXTERNAL**: This is inventory of external sellers who are registered on Flipkart, this can be used via their apis
 Order: When a customer buys something on Flipkart an order is created. It should have basic properties and states that are needed according to the use cases mentioned in the problem.
 
-Mandatory Implementations:
+### Mandatory Implementations:
 
-**addItemToInventory(itemId, quantity)**: This is used to add an item or add more quantities of an existing item in Flipkart’s internal inventory. You cannot manage an external seller’s inventory.
-**getAvailableInventory(itemId, seller)**: This is used to get available inventory for an item and a seller.
-**createOrder(customerId, itemsInfo, address etc)**: This is used to create an order in the system, Customer can purchase multiple items in one order. Creating an order also provisionally reserves the inventory until it is confirmed. All the items in an order will be from the same seller. This api also tells the total amount that the customer needs to pay. This should also make necessary validations and throw errors.
-**updateOrder(orderId, OrderState)**: This is used to update an order to confirm, cancel or mark an order fulfilled.
+- **addItemToInventory(itemId, quantity)**: This is used to add an item or add more quantities of an existing item in Flipkart’s internal inventory. You cannot manage an external seller’s inventory.
+
+- **getAvailableInventory(itemId, seller)**: This is used to get available inventory for an item and a seller.
+
+- **createOrder(customerId, itemsInfo, address etc)**: This is used to create an order in the system, Customer can purchase multiple items in one order. Creating an order also provisionally reserves the inventory until it is confirmed. All the items in an order will be from the same seller. This api also tells the total amount that the customer needs to pay. This should also make necessary validations and throw errors.
+
+- **updateOrder(orderId, OrderState)**: This is used to update an order to confirm, cancel or mark an order fulfilled.
+
 Confirm: order is confirmed after successful payment. The inventory reserved during creation is now BLOCKED.
 Cancel*: order is cancelled and any reserved/blocked inventory is unblocked
 Fulfilled: order is marked fulfilled once the items are delivered to the customer. Only confirmed orders can be fulfilled
