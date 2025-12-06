@@ -7,15 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.splitwise.interfaces.IGroupRepository;
 import com.splitwise.model.Expense;
 import com.splitwise.model.Group;
 
-public class GroupRepository {
+public class GroupRepository implements IGroupRepository {
     private final Map<String, Group> groups;
     private final Map<String, Map<String, Map<String, Double>>> balances;
     private final Map<String, Set<String>> groupMembers;
     private final Map<String, List<Expense>> groupExpenses;
 
+    @Override
     public void saveGroup(Group group) {
         String id = group.getId();
         groups.put(id, group);
@@ -24,6 +26,7 @@ public class GroupRepository {
         groupExpenses.put(id, new ArrayList<>());
     }
 
+    @Override
     public void addUser(String groupId, String userId) {
         groupMembers.get(groupId).add(userId);
         balances.get(groupId).putIfAbsent(userId, new HashMap<>());
@@ -35,6 +38,7 @@ public class GroupRepository {
         }
     }
 
+    @Override
     public void leaveUser(String groupId, String userId) {
         groupMembers.get(groupId).remove(userId);
         balances.get(groupId).remove(userId);
@@ -45,10 +49,12 @@ public class GroupRepository {
         }
     }
 
+    @Override
     public void addExpense(String groupId, Expense expense) {
         groupExpenses.get(groupId).add(expense);
     }
 
+    @Override
     public void updateBalances(String groupId, String paidBy, String userId, Double amount) {
         Map<String, Map<String, Double>> groupBalance = balances.get(groupId);
 
@@ -61,12 +67,19 @@ public class GroupRepository {
     
     }
 
+    @Override
     public Map<String, Map<String, Double>> getBalance(String groupId) {
         return balances.get(groupId);
     }
 
+    @Override
     public Set<String> getGroupMembers(String groupId) {
         return groupMembers.get(groupId);
+    }
+
+    @Override
+    public void saveGroupBalance(String groupId, Map<String, Map<String, Double>> balance) {
+        balances.put(groupId, balance);
     }
 
     public GroupRepository() {

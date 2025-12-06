@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.splitwise.constants.SplitType;
 import com.splitwise.exceptions.UserNotFoundException;
+import com.splitwise.interfaces.IUserService;
 import com.splitwise.model.User;
-import com.splitwise.service.UserService;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final IUserService userService;
 
     public String createUser(String name, String email) {
         return userService.createUser(name, email);

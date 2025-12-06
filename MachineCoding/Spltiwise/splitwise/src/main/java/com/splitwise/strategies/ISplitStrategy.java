@@ -2,8 +2,9 @@ package com.splitwise.strategies;
 
 import java.util.List;
 
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.model.Split;
 
 public interface ISplitStrategy {
-    List<Split> splitExpense(List<String> users, List<Double> userSplit, Double amount);
+    List<Split> splitExpense(List<String> users, List<Double> userSplit, Double amount) throws InvalidUserSplitException;
 }

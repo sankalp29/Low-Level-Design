@@ -7,6 +7,10 @@ import com.splitwise.constants.SplitType;
 import com.splitwise.controller.GroupController;
 import com.splitwise.controller.UserController;
 import com.splitwise.exceptions.UserNotFoundException;
+import com.splitwise.interfaces.IGroupRepository;
+import com.splitwise.interfaces.IGroupService;
+import com.splitwise.interfaces.IUserRepository;
+import com.splitwise.interfaces.IUserService;
 import com.splitwise.repository.GroupRepository;
 import com.splitwise.repository.UserRepository;
 import com.splitwise.service.GroupService;
@@ -14,11 +18,11 @@ import com.splitwise.service.UserService;
 
 public class Main {
     public static void main(String[] args) throws UserNotFoundException {
-        UserRepository userRepository = new UserRepository();
-        UserService userService = new UserService(userRepository);
+        IUserRepository userRepository = new UserRepository();
+        IUserService userService = new UserService(userRepository);
         UserController userController = new UserController(userService);
-        GroupRepository groupRepository = new GroupRepository();
-        GroupService groupService = new GroupService(userService, groupRepository);
+        IGroupRepository groupRepository = new GroupRepository();
+        IGroupService groupService = new GroupService(userService, groupRepository);
         GroupController groupController = new GroupController(groupService);
 
         String sankalp = userController.createUser("Sankalp", "sankalp@gmail.com");
@@ -55,6 +59,12 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
+        System.out.println();
+        groupController.simplify(groupId);
+        System.out.println("======== Group Balances after simplify() ========");
+        groupController.displayBalances(groupId);
+        System.out.println();
 
         System.out.println("======== Settling balance : User-3 ========");
         groupController.settleBalance(groupId, friend1, sankalp, 400.0);

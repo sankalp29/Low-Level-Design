@@ -7,36 +7,37 @@ import java.util.Set;
 import com.splitwise.constants.SplitType;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.factory.SplitStrategyFactory;
+import com.splitwise.interfaces.IGroupRepository;
+import com.splitwise.interfaces.IGroupService;
+import com.splitwise.interfaces.IUserService;
 import com.splitwise.model.Expense;
 import com.splitwise.model.Group;
 import com.splitwise.model.Split;
 import com.splitwise.model.User;
-import com.splitwise.repository.GroupRepository;
 import com.splitwise.strategies.ISplitStrategy;
+import com.splitwise.utils.BalanceSimplifier;
 
-public class GroupService {
-    private final UserService userService;
-    private final GroupRepository groupRepository;
+public class GroupService implements IGroupService {
+    private final IUserService userService;
+    private final IGroupRepository groupRepository;
 
     // ------------------ GROUP OPERATIONS ------------------
 
+    @Override
     public String createGroup(String name) {
         Group group = new Group(name);
         groupRepository.saveGroup(group);
-        // String id = group.getId();
-        // groups.put(id, group);
-        // balances.put(id, new HashMap<>());
-        // groupMembers.put(id, new HashSet<>());
-        // groupExpenses.put(id, new ArrayList<>());
 
         return group.getId();
     }
 
+    @Override
     public void addUser(String groupId, String userId) {
         groupRepository.addUser(groupId, userId);
         System.out.println(userId + " added to group " + groupId);
     }
 
+    @Override
     public boolean leaveUser(String groupId, String userId) {
         if (!isBalanceSettled(groupId, userId)) {
             System.out.println("Balance not settled. " + userId + " cannot leave group before settling balances");
@@ -50,6 +51,7 @@ public class GroupService {
 
     // ------------------ EXPENSE OPERATIONS ------------------
 
+    @Override
     public void addExpense(String groupId,
                            String paidByUserId,
                            double amount,
@@ -69,12 +71,12 @@ public class GroupService {
         notifyParticipants(groupId, users, expense);
     }
 
+    @Override
     public void settleBalance(String groupId, String senderId, String receiverId, double amount) throws UserNotFoundException {
 
         if (amount <= 0)
             throw new IllegalArgumentException("Settlement amount must be positive");
     
-        // Map<String, Map<String, Double>> groupBalance = balances.get(groupId);
         Map<String, Map<String, Double>> groupBalance = groupRepository.getBalance(groupId);
     
         if (!groupBalance.containsKey(senderId) || !groupBalance.containsKey(receiverId))
@@ -91,6 +93,13 @@ public class GroupService {
         User receiver = userService.getUserById(receiverId);
         String notification = "Received Rs. " + amount + " from " + senderId;
         receiver.notify(notification);
+    }
+
+    @Override
+    public void simplify(String groupId) {
+        Map<String, Map<String, Double>> groupBalance = groupRepository.getBalance(groupId);
+        groupBalance = BalanceSimplifier.simplify(groupBalance);
+        groupRepository.saveGroupBalance(groupId, groupBalance);
     }
     
     private void updateBalances(String groupId, String paidBy, List<Split> splits) {    
@@ -122,6 +131,7 @@ public class GroupService {
         }
     }
 
+    @Override
     public void displayBalances(String groupId) {
         System.out.println(groupRepository.getBalance(groupId));
     }
@@ -138,7 +148,7 @@ public class GroupService {
         }
     }
 
-    public GroupService(UserService userService, GroupRepository groupRepository) {
+    public GroupService(IUserService userService, IGroupRepository groupRepository) {
         this.userService = userService;
         this.groupRepository = groupRepository;
     }

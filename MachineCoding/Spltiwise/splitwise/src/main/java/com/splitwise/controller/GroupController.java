@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.splitwise.constants.SplitType;
 import com.splitwise.exceptions.UserNotFoundException;
-import com.splitwise.service.GroupService;
+import com.splitwise.interfaces.IGroupService;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class GroupController {
-    private final GroupService groupService;
+    private final IGroupService groupService;
 
     public String createGroup(String name) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Group name cannot be empty");
@@ -41,6 +41,10 @@ public class GroupController {
             throw new IllegalArgumentException("Settlement amount must be positive");
     
         groupService.settleBalance(groupId, senderId, receiverId, amount);
+    }
+
+    public void simplify(String groupId) {
+        groupService.simplify(groupId);
     }
 
     public void displayBalances(String groupId) {
