@@ -4,32 +4,37 @@ import com.inmemorycache.strategies.LFUCache;
 import com.inmemorycache.strategies.LRUCache;
 
 public class Main {
-    public static void main(String[] args) {
-        testLFUEviction2();
+    public static void main(String[] args) throws InterruptedException {
+        
     }
 
-    private static void testLFUEviction2() {
-        LFUCache<String, String> cache = new LFUCache<>(2);
-        cache.put("A", "1", 100);  // freq=1, minFreq=1
-        cache.get("A");             // freq=2, minFreq=2 (freq=1 list now empty)
+    private static void testSimpleLFUConcurrency() throws InterruptedException {
+        LFUCache<String, String> lfuCache = new LFUCache<>(2);
+        Thread thread1 = new Thread(() -> lfuCache.put("A", "A", 1));
+        Thread thread2 = new Thread(() -> lfuCache.put("B", "B", 1));
+        Thread thread3 = new Thread(() -> lfuCache.put("C", "C", 1));
+        
+        thread1.start();
+        thread2.start();
+        thread3.start();
 
-        // frequencyLists: {2: [A]}
-        // minFrequency = 2
+        thread1.join();
+        thread2.join();
+        thread3.join();
 
-        cache.put("B", "2", 100);   // size=2, capacity=2
-        // Tries to evict from frequency=2, removes A
-        // keys: {B}, size=1
+        Thread thread4 = new Thread(() -> System.out.println("Key A : " + lfuCache.get("A")));
+        Thread thread5 = new Thread(() -> System.out.println("Key B : " + lfuCache.get("B")));
+        Thread thread6 = new Thread(() -> System.out.println("Key C : " + lfuCache.get("C")));
 
-        cache.put("C", "3", 100);   // size=1, capacity=2, no eviction
-        // keys: {B, C}, size=2
+        thread4.start();
+        thread5.start();
+        thread6.start();
 
-        cache.put("D", "4", 100);   // size=2, capacity=2
-        // Tries to get list at minFrequency=2
-        // But that list might be empty or null!
-        // If null/empty, doesn't evict but still adds D
-        // keys: {B, C, D}, size=3 ❌ CAPACITY VIOLATED!
+        thread4.join();
+        thread5.join();
+        thread6.join();
 
-        System.out.println("Cache Size : " + cache.getCacheSize());
+        System.out.println(lfuCache.getCacheSize()); // Should be 2
     }
 
     private static void testLFUEviction() {
