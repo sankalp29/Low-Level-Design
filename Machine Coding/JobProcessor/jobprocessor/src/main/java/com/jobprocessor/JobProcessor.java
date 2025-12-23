@@ -78,7 +78,7 @@ public class JobProcessor {
             Thread thread = new Thread(r);
             thread.setName("Job Processor Thread");
             thread.setDaemon(false);
-            // Daemon thread so that the Main thread does not end till all background jobs are processed
+            // Not a Daemon thread so that the Main thread waits till all background jobs are processed
             return thread;
         });
         processorWorker.submit(this::processJobs);
