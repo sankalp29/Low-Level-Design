@@ -10,7 +10,7 @@ import com.splitwise.model.Split;
 public class PercentageSplitStrategy implements ISplitStrategy {
 
     @Override
-    public List<Split> splitExpense(List<String> userIds, List<Double> userSplit, Double amount) throws throws InvalidUserSplitException {
+    public List<Split> splitExpense(List<String> userIds, List<Double> userSplit, Double amount) throws InvalidUserSplitException {
         List<Split> splits = new ArrayList<>();
         int n = userIds.size();
         double totalPercentage = 0.0;

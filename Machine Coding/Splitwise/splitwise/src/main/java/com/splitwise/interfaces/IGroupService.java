@@ -3,6 +3,7 @@ package com.splitwise.interfaces;
 import java.util.List;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 
 public interface IGroupService {
@@ -19,7 +20,7 @@ public interface IGroupService {
             String description,
             List<String> users,
             SplitType splitType,
-            List<Double> splitValues) throws UserNotFoundException;
+            List<Double> splitValues) throws UserNotFoundException, InvalidUserSplitException;
 
     void settleBalance(String groupId, String senderId, String receiverId, double amount) throws UserNotFoundException;
 

@@ -3,6 +3,7 @@ package com.splitwise.controller;
 import java.util.List;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.interfaces.IGroupService;
 
@@ -31,7 +32,7 @@ public class GroupController {
                            String description,
                            List<String> users,
                            SplitType splitType,
-                           List<Double> splitValues) throws UserNotFoundException {
+                           List<Double> splitValues) throws UserNotFoundException, InvalidUserSplitException {
 
         groupService.addExpense(groupId, paidByUserId, amount, description, users, splitType, splitValues);
     }

@@ -3,9 +3,13 @@ package com.splitwise;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import com.splitwise.constants.SplitType;
 import com.splitwise.controller.GroupController;
 import com.splitwise.controller.UserController;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.interfaces.IGroupRepository;
 import com.splitwise.interfaces.IGroupService;
@@ -16,8 +20,13 @@ import com.splitwise.repository.UserRepository;
 import com.splitwise.service.GroupService;
 import com.splitwise.service.UserService;
 
+@SpringBootApplication
 public class Main {
-    public static void main(String[] args) throws UserNotFoundException {
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
+    }
+
+    private static void testUnsettledBalanceMemberExit() throws UserNotFoundException, InvalidUserSplitException {
         IUserRepository userRepository = new UserRepository();
         IUserService userService = new UserService(userRepository);
         UserController userController = new UserController(userService);
@@ -81,5 +90,85 @@ public class Main {
 
         System.out.println();
         groupController.displayBalances(groupId);
+    }
+
+    private static void testUserNotInGroup() throws UserNotFoundException, InvalidUserSplitException {
+        IUserRepository userRepository = new UserRepository();
+        IUserService userService = new UserService(userRepository);
+        UserController userController = new UserController(userService);
+        IGroupRepository groupRepository = new GroupRepository();
+        IGroupService groupService = new GroupService(userService, groupRepository);
+        GroupController groupController = new GroupController(groupService);
+
+        String userA = userController.createUser("A", "A@email.com");
+        String userB = userController.createUser("B", "B@email.com");
+
+        String groupId = groupController.createGroup("Trip");
+
+        groupController.addExpense(groupId, userA, 100, groupId, List.of(userB), SplitType.EQUAL, List.of());
+
+        System.out.println();
+        System.out.println("======== Balance ========");
+        groupController.displayBalances(groupId);
+        System.out.println();
+
+        groupController.settleBalance(groupId, userB, userA, 100);
+
+        System.out.println();
+        System.out.println("======== Balance ========");
+        groupController.displayBalances(groupId);
+        System.out.println();
+    }
+
+    private static void testHappyFlow() throws UserNotFoundException, InvalidUserSplitException {
+        IUserRepository userRepository = new UserRepository();
+        IUserService userService = new UserService(userRepository);
+        UserController userController = new UserController(userService);
+        IGroupRepository groupRepository = new GroupRepository();
+        IGroupService groupService = new GroupService(userService, groupRepository);
+        GroupController groupController = new GroupController(groupService);
+
+        String userA = userController.createUser("A", "A@email.com");
+        String userB = userController.createUser("B", "B@email.com");
+
+        String groupId = groupController.createGroup("Trip");
+        groupController.addUser(groupId, userA);
+        groupController.addUser(groupId, userB);
+        groupController.addExpense(groupId, userA, 100, groupId, List.of(userB), SplitType.EQUAL, List.of());
+
+        System.out.println();
+        System.out.println("======== Balance ========");
+        groupController.displayBalances(groupId);
+        System.out.println();
+
+        groupController.settleBalance(groupId, userB, userA, 100);
+
+        System.out.println();
+        System.out.println("======== Balance ========");
+        groupController.displayBalances(groupId);
+        System.out.println();
+    }
+
+    private static void testUserToUserFlow() throws UserNotFoundException, InvalidUserSplitException {
+        IUserRepository userRepository = new UserRepository();
+        IUserService userService = new UserService(userRepository);
+        UserController userController = new UserController(userService);
+
+        String userA = userController.createUser("userA", "userA@gmail.com");
+        String userB = userController.createUser("userB", "userB@gmail.com");
+
+        userController.addExpense(userA, userB, 100.0, SplitType.EQUAL, List.of());
+
+        userController.displayUserBalance(userA);
+        System.out.println();
+        userController.displayUserBalance(userB);
+        System.out.println();
+
+        userController.addExpense(userB, userA, 100.0, SplitType.EXACT, List.of(50.0, 50.0));
+
+        System.out.println();
+        userController.displayUserBalance(userA);
+        System.out.println();
+        userController.displayUserBalance(userB);
     }
 }

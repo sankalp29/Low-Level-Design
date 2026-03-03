@@ -1,6 +1,7 @@
 package com.splitwise.model;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,13 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Group {
-    private static Integer groupNumber = 0;
+    private static final AtomicInteger groupNumber = new AtomicInteger(0);
     private final String id;
     private String name;
     private final LocalDateTime createdAt;
     
     public Group(String name) {
-        this.id = "group-" + (++groupNumber);
+        this.id = "Group-" + (groupNumber.incrementAndGet());
         this.name = name;
         this.createdAt = LocalDateTime.now();
     }

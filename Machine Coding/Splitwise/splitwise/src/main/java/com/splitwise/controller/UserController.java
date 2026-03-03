@@ -3,6 +3,7 @@ package com.splitwise.controller;
 import java.util.List;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.interfaces.IUserService;
 import com.splitwise.model.User;
@@ -25,8 +26,12 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
-    public void addExpense(String paidBy, String paidTo, Double amount, SplitType splitType, List<Double> userSplit) throws UserNotFoundException {
+    public void addExpense(String paidBy, String paidTo, Double amount, SplitType splitType, List<Double> userSplit) throws UserNotFoundException, InvalidUserSplitException {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be greater than 0.");
         userService.addExpense(paidBy, paidTo, amount, splitType, userSplit);
+    }
+
+    public void displayUserBalance(String userId) throws UserNotFoundException {
+        userService.displayUserBalance(userId);
     }
 }

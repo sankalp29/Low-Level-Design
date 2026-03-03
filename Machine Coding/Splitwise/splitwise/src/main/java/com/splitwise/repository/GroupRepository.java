@@ -58,12 +58,13 @@ public class GroupRepository implements IGroupRepository {
     public void updateBalances(String groupId, String paidBy, String userId, Double amount) {
         Map<String, Map<String, Double>> groupBalance = balances.get(groupId);
 
-        // user owes paidBy
+        // + in paidBy's map because paidBy is going to GET the money later
         groupBalance.get(paidBy).put(userId, 
-            groupBalance.get(paidBy).get(userId) + amount);
+            groupBalance.get(paidBy).getOrDefault(userId, 0.0) + amount);
 
+        // - in userId's map because userId is going to PAY the money later
         groupBalance.get(userId).put(paidBy,
-            groupBalance.get(userId).get(paidBy) - amount);
+            groupBalance.get(userId).getOrDefault(paidBy, 0.0) - amount);
     
     }
 

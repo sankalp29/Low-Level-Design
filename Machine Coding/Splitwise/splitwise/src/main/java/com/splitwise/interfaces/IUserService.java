@@ -3,6 +3,7 @@ package com.splitwise.interfaces;
 import java.util.List;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.model.User;
 
@@ -15,6 +16,8 @@ public interface IUserService {
     User getUserById(String userId) throws UserNotFoundException;
 
     void addExpense(String paidBy, String paidTo, Double amount, SplitType splitType, List<Double> userSplit)
-            throws UserNotFoundException;
+            throws UserNotFoundException, InvalidUserSplitException;
+
+    void displayUserBalance(String userId);
 
 }

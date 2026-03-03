@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.factory.SplitStrategyFactory;
 import com.splitwise.interfaces.IGroupRepository;
@@ -20,8 +21,6 @@ import com.splitwise.utils.BalanceSimplifier;
 public class GroupService implements IGroupService {
     private final IUserService userService;
     private final IGroupRepository groupRepository;
-
-    // ------------------ GROUP OPERATIONS ------------------
 
     @Override
     public String createGroup(String name) {
@@ -49,8 +48,6 @@ public class GroupService implements IGroupService {
         return true;
     }
 
-    // ------------------ EXPENSE OPERATIONS ------------------
-
     @Override
     public void addExpense(String groupId,
                            String paidByUserId,
@@ -58,7 +55,7 @@ public class GroupService implements IGroupService {
                            String description,
                            List<String> users,
                            SplitType splitType,
-                           List<Double> splitValues) throws UserNotFoundException {
+                           List<Double> splitValues) throws UserNotFoundException, InvalidUserSplitException {
 
         validateUsers(groupId, users);
 
@@ -73,7 +70,6 @@ public class GroupService implements IGroupService {
 
     @Override
     public void settleBalance(String groupId, String senderId, String receiverId, double amount) throws UserNotFoundException {
-
         if (amount <= 0)
             throw new IllegalArgumentException("Settlement amount must be positive");
     
@@ -83,12 +79,13 @@ public class GroupService implements IGroupService {
             throw new IllegalArgumentException("Sender or receiver not part of group");
     
         // sender pays receiver → sender owes less, receiver gets back money
-        double oldSenderOwes = groupBalance.get(senderId).getOrDefault(receiverId, 0.0);
-        double oldReceiverOwes = groupBalance.get(receiverId).getOrDefault(senderId, 0.0);
+        groupRepository.updateBalances(groupId, senderId, receiverId, amount);
+        // double oldSenderOwes = groupBalance.get(senderId).getOrDefault(receiverId, 0.0);
+        // double oldReceiverOwes = groupBalance.get(receiverId).getOrDefault(senderId, 0.0);
     
-        // Update pairwise balances
-        groupBalance.get(senderId).put(receiverId, oldSenderOwes + amount);
-        groupBalance.get(receiverId).put(senderId, oldReceiverOwes - amount);
+        // // Update pairwise balances
+        // groupBalance.get(senderId).put(receiverId, oldSenderOwes + amount);
+        // groupBalance.get(receiverId).put(senderId, oldReceiverOwes - amount);
 
         User receiver = userService.getUserById(receiverId);
         String notification = "Received Rs. " + amount + " from " + senderId;
@@ -112,8 +109,6 @@ public class GroupService implements IGroupService {
             groupRepository.updateBalances(groupId, paidBy, user, amt);
         }
     }
-
-    // ------------------ UTILITIES ------------------
 
     private boolean isBalanceSettled(String groupId, String userId) {
         Map<String, Map<String, Double>> balances = groupRepository.getBalance(groupId);

@@ -3,6 +3,7 @@ package com.splitwise.service;
 import java.util.List;
 
 import com.splitwise.constants.SplitType;
+import com.splitwise.exceptions.InvalidUserSplitException;
 import com.splitwise.exceptions.UserNotFoundException;
 import com.splitwise.factory.SplitStrategyFactory;
 import com.splitwise.interfaces.IUserRepository;
@@ -37,12 +38,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void addExpense(String paidBy, String paidTo, Double amount, SplitType splitType, List<Double> userSplit) throws UserNotFoundException {
+    public void addExpense(String paidBy, String paidTo, Double amount, SplitType splitType, List<Double> userSplit) throws UserNotFoundException, InvalidUserSplitException {
         User paidByUser = getUserById(paidBy);
         User paidToUser = getUserById(paidTo);
         List<Split> splits = SplitStrategyFactory.getSplitStrategy(splitType).splitExpense(List.of(paidBy, paidTo), userSplit, amount);
 
-        paidByUser.addExpense(paidTo, splits.get(0).getAmount(), paidTo, splitType, userSplit);
-        paidToUser.addExpense(paidBy, -splits.get(1).getAmount(), paidBy, splitType, userSplit);
+        userRepository.saveExpense(paidBy, paidTo, splits.get(1).getAmount());
+    }
+
+    @Override
+    public void displayUserBalance(String userId) {
+        System.out.println(userId + " balance : " + userRepository.getUserBalance(userId));
     }
 }
